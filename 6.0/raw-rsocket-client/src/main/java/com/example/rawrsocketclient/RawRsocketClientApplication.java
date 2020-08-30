@@ -2,6 +2,7 @@ package com.example.rawrsocketclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.rsocket.Payload;
+import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.DefaultPayload;
@@ -14,6 +15,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.netty.udp.UdpClient;
 
 @SpringBootApplication
 public class RawRsocketClientApplication {
@@ -40,15 +43,16 @@ class Consumer {
 
     var request = jsonHelper.write(new GreetingRequest("Livelessons"));
 
-    RSocketFactory
-        .connect()
-        .transport(TcpClientTransport.create(7000))
-        .start()
-        .flatMapMany(sender -> sender
+    Mono<RSocket> rSocket = RSocketFactory
+            .connect()
+            .transport(TcpClientTransport.create(7000))
+            .start();
+
+    rSocket.flatMapMany(sender -> sender
             .requestStream(DefaultPayload.create(request))
             .map(Payload::getDataUtf8)
             .map(json -> jsonHelper.read(json, GreetingResponse.class))
-        )
+        ).map(GreetingResponse::getMessage)
         .subscribe(result -> log.info("processing new result " + result.toString()));
   }
 }

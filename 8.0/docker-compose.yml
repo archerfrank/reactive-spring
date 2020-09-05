@@ -1,0 +1,19 @@
+version: '2.1'
+
+services:
+  my_postgres:
+    image: postgres:12.1
+    mem_limit: 350m
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=orders
+      - POSTGRES_USER=orders
+      - POSTGRES_PASSWORD=orders
+
+  redis:
+    image: redis:6.0.7
+    mem_limit: 350m
+    restart: always
+    ports:
+      - "6379:6379"

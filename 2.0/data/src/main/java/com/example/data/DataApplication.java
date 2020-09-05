@@ -84,7 +84,7 @@ class SampleDataInitializer {
   public void ready() {
 
     Flux<Reservation> reservations = reservationService
-        .saveAll("Madhura", "josh", "Olga", "Marcin", "Ria", "Stéphane", "Violetta", "Dr. Syer");
+        .saveAll("Madhura", "Josh", "Olga", "Marcin", "Ria", "Stéphane", "Violetta", "Dr. Syer");
 
     this.reservationRepository
         .deleteAll()
